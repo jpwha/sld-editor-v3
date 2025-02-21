@@ -29,5 +29,5 @@ yarn install
 ### Running Locally
 yarn dev
 
-### Copy SLD from Geoserver into input field, click "Parse Button" and create your symbology
+### Copy SLD from Geoserver into input field, click "Parse" button and create your symbology
 
