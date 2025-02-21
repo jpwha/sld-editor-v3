@@ -1,0 +1,13 @@
+/* src/styles/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Add any custom styles below */
+body {
+  @apply bg-gray-50;
+}
+
+.draggable-item {
+    user-select: none; /* Prevents text selection during drag */
+  }

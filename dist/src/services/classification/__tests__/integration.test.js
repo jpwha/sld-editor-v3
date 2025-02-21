@@ -1,0 +1,48 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const jsx_runtime_1 = require("react/jsx-runtime");
+const react_hooks_1 = require("@testing-library/react-hooks");
+const useClassification_1 = require("../../hooks/useClassification");
+const SldEditorContext_1 = require("../../context/SldEditorContext");
+const TestProvider = ({ children, initialState = {} }) => ((0, jsx_runtime_1.jsx)(SldEditorContext_1.SldEditorProvider, { initialState: Object.assign({}, initialState), children: children }));
+const defaultState = {
+    entries: [],
+    binningControls: { numBins: 5, method: 'equalInterval', roundIncrement: 0, includeMissing: false },
+    dataType: { id: 'roads', label: 'Roads', units: [{ id: 'km', label: 'Kilometers (km)' }], defaultBins: 5, defaultColors: ['#ff0000', '#00ff00'] },
+    selectedUnit: { id: 'km', label: 'Kilometers (km)' },
+    sldText: '',
+    outputSld: '',
+    editableLegend: { colorPickerType: 'chrome', gradientPreset: 'Spectral', reverseRangeDisplay: false, decimalPlaces: 2, displayAsPercentage: false },
+    loading: false,
+    error: null,
+};
+describe('Classification Integration', () => {
+    const mockEntries = [
+        { quantity: '1', color: '#000000', label: '1', opacity: '1.0' },
+        { quantity: '2', color: '#000000', label: '2', opacity: '1.0' },
+        { quantity: 'NaN', color: '#000000', label: 'NaN', opacity: '1.0' },
+        { quantity: '-999', color: '#000000', label: '-999', opacity: '1.0' },
+    ];
+    it('processes valid and invalid values correctly', () => {
+        const { result } = (0, react_hooks_1.renderHook)(() => (0, useClassification_1.useClassification)(), {
+            wrapper: ({ children }) => ((0, jsx_runtime_1.jsx)(TestProvider, { initialState: Object.assign(Object.assign({}, defaultState), { entries: mockEntries, binningControls: Object.assign(Object.assign({}, defaultState.binningControls), { numBins: 2, includeMissing: true }) }), children: children })),
+        });
+        (0, react_hooks_1.act)(() => result.current.applyClassification());
+        const entries = result.current.state.entries;
+        expect(entries).toHaveLength(3);
+        expect(entries[2].label).toContain('Missing');
+    });
+    it('handles all classification methods with loading states', () => {
+        const methods = ['equalInterval', 'quantile', 'stdDev', 'jenks'];
+        methods.forEach(method => {
+            const { result } = (0, react_hooks_1.renderHook)(() => (0, useClassification_1.useClassification)(), {
+                wrapper: ({ children }) => ((0, jsx_runtime_1.jsx)(TestProvider, { initialState: Object.assign(Object.assign({}, defaultState), { entries: mockEntries, binningControls: Object.assign(Object.assign({}, defaultState.binningControls), { method, numBins: 3 }) }), children: children })),
+            });
+            (0, react_hooks_1.act)(() => result.current.applyClassification());
+            expect(result.current.state.loading).toBe(false);
+            expect(result.current.state.error).toBeNull();
+            expect(result.current.state.entries.length).toBe(3);
+        });
+    });
+});
+//# sourceMappingURL=integration.test.js.map
