@@ -19,7 +19,7 @@ A simple SLD (Styled Layer Descriptor) editor built with React, TypeScript, Vite
 
 ### Installation
 
-git clone https://github.com/<YOUR_GITHUB_USERNAME>/sld-editor-v3.git
+git clone https://github.com/jpwha/sld-editor-v3.git
 cd sld-editor-v3
 yarn install
 
